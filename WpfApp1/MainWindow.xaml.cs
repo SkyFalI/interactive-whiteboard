@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +30,7 @@ namespace WpfApp1 {
         }
         // Очистка доски
         private void ClearCanvas (object sender, RoutedEventArgs e) {
-            InkCanvas.Strokes.Clear();
+            InkCanvas1.Strokes.Clear();
         }
         
         // Закрытие приложения
@@ -45,7 +47,51 @@ namespace WpfApp1 {
 
             clr = Color.FromRgb(mcolor.R, mcolor.G, mcolor.B);
 
-            InkCanvas.DefaultDrawingAttributes.Color = clr;
+            InkCanvas1.DefaultDrawingAttributes.Color = clr;
+        }
+
+        // Сохраняем свое творчество
+        private void SaveCanvas(object sender, RoutedEventArgs e)
+        {
+            
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Filter = "png files|*.png";
+            SFD.ShowDialog();
+            string Patch = SFD.FileName;
+
+            // https://stackoverflow.com/questions/21411878/saving-a-canvas-to-png-c-sharp-wpf
+
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(InkCanvas1);
+            double dpi = 96d;
+
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, System.Windows.Media.PixelFormats.Default);
+
+            DrawingVisual dv = new DrawingVisual();
+            using (DrawingContext dc = dv.RenderOpen())
+            {
+                VisualBrush vb = new VisualBrush(InkCanvas1);
+                dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+            }
+
+            rtb.Render(dv);
+
+            BitmapEncoder pngEncoder = new PngBitmapEncoder();
+            pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
+
+            try
+            {
+                MemoryStream ms = new System.IO.MemoryStream();
+
+                pngEncoder.Save(ms);
+                ms.Close();
+
+                File.WriteAllBytes(Patch, ms.ToArray());
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
     }
 

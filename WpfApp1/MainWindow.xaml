@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1024" WindowStartupLocation="CenterScreen" WindowState="Maximized" ResizeMode="CanMinimize">
+        Title="MainWindow" Height="800" Width="1024" WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip">
     <Grid Background="Lavender">
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -19,15 +19,16 @@
         </Grid.ColumnDefinitions>
         <InkCanvas
             Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2"
-            x:Name="InkCanvas" 
+            x:Name="InkCanvas1" 
             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
         <StackPanel Name="BrushPanel" Grid.Column="1" Grid.Row="2">
             <Slider Name="ColorRed" Background="Red" Minimum="0" Maximum="255" ValueChanged="ColorChanged"></Slider>
             <Slider Name="ColorGreen" Background="Green" Minimum="0" Maximum="255" ValueChanged="ColorChanged"></Slider>
             <Slider Name="ColorBlue" Background="Blue" Minimum="0" Maximum="255" ValueChanged="ColorChanged"></Slider>
-            <Button Content="Очистить" Height="31"  Width="90" Click="ClearCanvas"/>
-            <Button Content="Закрыть" Height="31"  Width="90" Click="CloseApp"/>
+            <Button Content="Очистить" Height="31"  Width="90" Click="ClearCanvas" Margin="0, 5, 0 ,5"/>
+            <Button Content="Сохранить" Height="31"  Width="90" Click="SaveCanvas" Margin="0, 5, 0 ,5"/>
+            <Button Content="Закрыть" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5"/>
         </StackPanel>
     </Grid>
 </Window>
