@@ -26,10 +26,18 @@ namespace WpfApp1 {
             mcolor.R = mcolor.B = mcolor.G = 0;
 
         }
-
+        // Очистка доски
         private void ClearCanvas (object sender, RoutedEventArgs e) {
             InkCanvas.Strokes.Clear();
         }
+        
+        // Закрытие приложения
+        private void CloseApp (object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        
+        // Меняем цвет при изменении значенний у слайдера
         private void ColorChanged (object sender, RoutedPropertyChangedEventArgs<double> e) {
             mcolor.R = Convert.ToByte(ColorRed.Value);
             mcolor.G = Convert.ToByte(ColorGreen.Value);
@@ -41,7 +49,7 @@ namespace WpfApp1 {
         }
     }
 
-    
+    // Класс для определения цветов
     public class ColorRGB
     {
         public byte R { get; set; }
