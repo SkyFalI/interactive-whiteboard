@@ -34,8 +34,7 @@ namespace WpfApp1 {
         }
         
         // Закрытие приложения
-        private void CloseApp (object sender, RoutedEventArgs e)
-        {
+        private void CloseApp (object sender, RoutedEventArgs e) {
             this.Close();
         }
         
@@ -51,8 +50,7 @@ namespace WpfApp1 {
         }
 
         // Сохраняем свое творчество
-        private void SaveCanvas(object sender, RoutedEventArgs e)
-        {
+        private void SaveCanvas(object sender, RoutedEventArgs e) {
             
             SaveFileDialog SFD = new SaveFileDialog();
             SFD.Filter = "png files|*.png";
@@ -67,8 +65,7 @@ namespace WpfApp1 {
             RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, System.Windows.Media.PixelFormats.Default);
 
             DrawingVisual dv = new DrawingVisual();
-            using (DrawingContext dc = dv.RenderOpen())
-            {
+            using (DrawingContext dc = dv.RenderOpen()) {
                 VisualBrush vb = new VisualBrush(InkCanvas1);
                 dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
             }
@@ -77,32 +74,31 @@ namespace WpfApp1 {
 
             BitmapEncoder pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
-
-            try
-            {
-                MemoryStream ms = new System.IO.MemoryStream();
-
+            
+            try {
+                MemoryStream ms = new System.IO.MemoryStream(); 
                 pngEncoder.Save(ms);
                 ms.Close();
-
                 File.WriteAllBytes(Patch, ms.ToArray());
             }
-            catch (Exception err)
-            {
+            catch (Exception err) {
                 MessageBox.Show(err.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
         }
+
+        // Меняем толщину кисти
+        private void NumericLimit(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            InkCanvas1.DefaultDrawingAttributes.Width = (int)InkWidth.Value;
+            InkCanvas1.DefaultDrawingAttributes.Height = (int)InkWidth.Value;
+        }
     }
 
     // Класс для определения цветов
-    public class ColorRGB
-    {
+    public class ColorRGB {
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
-
-        
-    }
-
+    } 
 }
