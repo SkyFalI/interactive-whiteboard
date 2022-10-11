@@ -18,35 +18,32 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <InkCanvas
+        <InkCanvas            
+            MouseMove="MouseMove1"
+            MouseRightButtonUp="MouseUp1"
             Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2"
             x:Name="InkCanvas1" 
             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-            ScrollViewer.VerticalScrollBarVisibility="Auto"/>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="20" />
-            </Grid.ColumnDefinitions>
-        </Grid>
+            ScrollViewer.VerticalScrollBarVisibility="Auto" Height="800"
+            >
+        </InkCanvas>
+        <xctk:ColorCanvas x:Name="ColorPicker1" Visibility="Hidden" Height="272" Grid.Row="1" VerticalAlignment="Bottom" MouseLeave="PickerHide"/>
         <StackPanel Grid.Row="2">
-            <Button Width="64" Height="32" Content="Отменить" Margin="0,20,0,0" Click="Undo"></Button>
+            <TextBlock x:Name="TextBlock1" Height="16" Width="128" Margin="0,5,0,0"></TextBlock>
+            
+            <Button Width="64" Height="32" Content="Цвет" Margin="0,5,0,0" Click="ColorPicker"></Button>            
+            <Button Width="64" Height="32" Content="Отменить" Margin="0,5,0,0" Click="Undo"></Button>
             <Button Width="64" Height="32" Content="Вернуть" Margin="0,5,0,0" Click="Redo"></Button>
-            <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Minimum="1" Maximum="64" ValueChanged="NumericLimit"/>            
+            <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Value="1" Minimum="1" Maximum="64" ValueChanged="NumericLimit"/>            
         </StackPanel>
 
-        <StackPanel x:Name="BrushPanel" Grid.Row="2" Grid.ColumnSpan="3" Margin="341,3,341,0">
-
-            <Slider x:Name="ColorRed" Background="Red" Minimum="0" Maximum="255" ValueChanged="ColorChanged"/>
-            <Slider x:Name="ColorGreen" Background="Green" Minimum="0" Maximum="255" ValueChanged="ColorChanged"/>
-            <Slider x:Name="ColorBlue" Background="Blue" Minimum="0" Maximum="255" ValueChanged="ColorChanged"/>
-
+        <StackPanel x:Name="BrushPanel" Grid.Row="2" Grid.ColumnSpan="3" Margin="341,3,341,0">            
             <Button Content="Очистить" Height="31"  Width="90" Click="ClearCanvas" Margin="0, 5, 0 ,5"/>
             <Button Content="Сохранить" Height="31"  Width="90" Click="SaveCanvas" Margin="0, 5, 0 ,5"/>
             <Button Content="Закрыть" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2">
-            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser" Margin="0,5,0,0"></Button>
+            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser" Margin="0,20,0,0"></Button>
             <Button x:Name="Pen" Content="Кисть" Height="31" Width="90" Click="ChoicePen" Margin="0,5,0,0"></Button>
             <Button Name="Select" Content="Выбрать" Height="31" Width="90" Click="ChoiceSelect" Margin="0,5,0,0"></Button>
             <Button Name="TempObject" Content="Временный" Height="31" Width="90" Click="ChoiceTemp" Margin="0,5,0,0"></Button>
