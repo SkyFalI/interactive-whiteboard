@@ -29,8 +29,11 @@
                 <ColumnDefinition Width="20" />
             </Grid.ColumnDefinitions>
         </Grid>
-
-        <xctk:IntegerUpDown x:Name="InkWidth" Grid.Row="2" Width="64" Height="32" Minimum="1" Maximum="64" ValueChanged="NumericLimit"/>
+        <StackPanel Grid.Row="2">
+            <Button Width="64" Height="32" Content="Отменить" Margin="0,20,0,0" Click="Undo"></Button>
+            <Button Width="64" Height="32" Content="Вернуть" Margin="0,5,0,0" Click="Redo"></Button>
+            <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Minimum="1" Maximum="64" ValueChanged="NumericLimit"/>            
+        </StackPanel>
 
         <StackPanel x:Name="BrushPanel" Grid.Row="2" Grid.ColumnSpan="3" Margin="341,3,341,0">
 
@@ -43,10 +46,10 @@
             <Button Content="Закрыть" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5"/>
         </StackPanel>
         <StackPanel Grid.Row="2" Grid.Column="2">
-            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser"></Button>
-            <Button x:Name="Pen" Content="Кисть" Height="31" Width="90" Click="ChoicePen"></Button>
-            <Button Name="Select" Content="Выбрать" Height="31" Width="90" Click="ChoiceSelect"></Button>
-            <Button Name="TempObject" Content="Временный" Height="31" Width="90" Click="ChoiceTemp"></Button>
+            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser" Margin="0,5,0,0"></Button>
+            <Button x:Name="Pen" Content="Кисть" Height="31" Width="90" Click="ChoicePen" Margin="0,5,0,0"></Button>
+            <Button Name="Select" Content="Выбрать" Height="31" Width="90" Click="ChoiceSelect" Margin="0,5,0,0"></Button>
+            <Button Name="TempObject" Content="Временный" Height="31" Width="90" Click="ChoiceTemp" Margin="0,5,0,0"></Button>
         </StackPanel>
     </Grid>
 </Window>

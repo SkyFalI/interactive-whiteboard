@@ -9,27 +9,69 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WpfApp1
-{
+namespace WpfApp1 {
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        // this.KeyPreview = true;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
         public ColorRGB mcolor { get; set; }
         public Color clr { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+
             mcolor = new ColorRGB();
             mcolor.R = mcolor.B = mcolor.G = 0;
+        }
 
+        // Отслеживания нажатия на клавиатуру
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Z)
+            {
+                if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                {
+                    MessageBox.Show("ctrl+z"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                }
+            }
+            if (e.Key == Key.Y)
+            {
+                if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                {
+                    MessageBox.Show("ctrl+y"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                }
+            }
+            // Если понадобится нажатия трех клавиш
+            /*ModifierKeys combCtrSh = ModifierKeys.Control | ModifierKeys.Shift;
+            if (e.Key == Key.B)
+            {
+                if ((e.KeyboardDevice.Modifiers & combCtrSh) == combCtrSh)
+                    MessageBox.Show("Ctrl+Shift+B");
+            }*/
+        }
+
+
+        // Отменить дейсвтие
+        public void Undo(object sender, RoutedEventArgs e)
+        {
+            int count = InkCanvas1.Strokes.Count;
+            if (count > 0) InkCanvas1.Strokes.RemoveAt(InkCanvas1.Strokes.Count - 1);
+        }
+        // Кнопка вернуть
+        public void Redo(object sender, RoutedEventArgs e)
+        {
+            InkCanvas1.Strokes.Add(InkCanvas1.Strokes[1]);
         }
         // Очистка доски
         private void ClearCanvas(object sender, RoutedEventArgs e)
@@ -121,6 +163,7 @@ namespace WpfApp1
         {
             InkCanvas1.EditingMode = InkCanvasEditingMode.GestureOnly;
         }
+
     }
 
     // Класс для определения цветов
