@@ -25,13 +25,16 @@ namespace WpfApp1 {
     public partial class MainWindow : Window {
         // this.KeyPreview = true;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        public ColorRGB mcolor { get; set; }
+        public ColorARGB mcolor { get; set; }
         public Color clr { get; set; }
         public MainWindow() {
             InitializeComponent();
+            InkCanvas1.Cursor = Cursors.Cross;
 
-            mcolor = new ColorRGB();
-            mcolor.R = mcolor.B = mcolor.G = 0;
+            mcolor = new ColorARGB();
+            mcolor.A = 255; mcolor.R = mcolor.B = mcolor.G = 0;
+            clr = Color.FromArgb(255, 0, 0, 0);
+            InkCanvas1.DefaultDrawingAttributes.Color = clr;
         }
 
         // Отслеживания нажатия на клавиатуру
@@ -68,7 +71,7 @@ namespace WpfApp1 {
         }
         // Кнопка вернуть
         public void Redo(object sender, RoutedEventArgs e) {
-            InkCanvas1.Strokes.Add(InkCanvas1.Strokes[1]);
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
         // Очистка доски
         private void ClearCanvas(object sender, RoutedEventArgs e) {
@@ -129,19 +132,25 @@ namespace WpfApp1 {
         }
         // Выбираем ластик
         private void ChoiceEraser(object sender, RoutedEventArgs e) {
-            InkCanvas1.EditingMode = InkCanvasEditingMode.EraseByPoint;
+            InkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255,255,255,255);
+            InkCanvas1.UseCustomCursor = true;
         }
         // Выбираем кисть
         private void ChoicePen(object sender, RoutedEventArgs e) {
             InkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
+            InkCanvas1.DefaultDrawingAttributes.Color = clr;
+            InkCanvas1.UseCustomCursor = false;
         }
         // Выбираем "Выбрать"
         private void ChoiceSelect(object sender, RoutedEventArgs e) {
             InkCanvas1.EditingMode = InkCanvasEditingMode.Select;
+            InkCanvas1.UseCustomCursor = false;
         }
         // Временный объект
         private void ChoiceTemp(object sender, RoutedEventArgs e) {
             InkCanvas1.EditingMode = InkCanvasEditingMode.GestureOnly;
+            InkCanvas1.DefaultDrawingAttributes.Color = clr;
+            InkCanvas1.UseCustomCursor = false;
         }
 
         // Отслеживаем координаты мыши
@@ -175,7 +184,7 @@ namespace WpfApp1 {
     }
 
     // Класс для определения цветов
-    public class ColorRGB {
+    public class ColorARGB {
         public byte A { get; set; }
         public byte R { get; set; }
         public byte G { get; set; }
