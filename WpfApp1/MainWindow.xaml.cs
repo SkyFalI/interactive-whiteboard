@@ -23,18 +23,19 @@ namespace WpfApp1 {
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        // this.KeyPreview = true;//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+        public StrokeCollection temp;
 
         public ColorARGB mcolor { get; set; }
         public Color clr { get; set; }
         public MainWindow() {
             InitializeComponent();
-            InkCanvas1.Cursor = Cursors.Cross;
+            inkCanvas1.Cursor = Cursors.Cross;
 
             mcolor = new ColorARGB();
             mcolor.A = 255; mcolor.R = mcolor.B = mcolor.G = 0;
             clr = Color.FromArgb(255, 0, 0, 0);
-            InkCanvas1.DefaultDrawingAttributes.Color = clr;
+            inkCanvas1.DefaultDrawingAttributes.Color = clr;
         }
 
         // Отслеживания нажатия на клавиатуру
@@ -57,25 +58,31 @@ namespace WpfApp1 {
                 InkWidth.Value--;
             }
             // Если понадобится нажатия трех клавиш
-            /*ModifierKeys combCtrSh = ModifierKeys.Control | ModifierKeys.Shift;
+            ModifierKeys combCtrSh = ModifierKeys.Control | ModifierKeys.Shift;
             if (e.Key == Key.B)
             {
                 if ((e.KeyboardDevice.Modifiers & combCtrSh) == combCtrSh)
                     MessageBox.Show("Ctrl+Shift+B");
-            }*/
+            }
         }
         // Отменить дейсвтие
         public void Undo(object sender, RoutedEventArgs e) {
-            int count = InkCanvas1.Strokes.Count;
-            if (count > 0) InkCanvas1.Strokes.RemoveAt(InkCanvas1.Strokes.Count - 1);
+            temp = inkCanvas1.Strokes.Clone();
+            int count = inkCanvas1.Strokes.Count;
+
+            if (count > 0) inkCanvas1.Strokes.RemoveAt(inkCanvas1.Strokes.Count - 1);
         }
         // Кнопка вернуть
         public void Redo(object sender, RoutedEventArgs e) {
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            try
+            {
+                inkCanvas1.Strokes.Add(temp[inkCanvas1.Strokes.Count]);
+            }
+            catch (Exception err) { MessageBox.Show("Нечего возвращать"); }
         }
         // Очистка доски
         private void ClearCanvas(object sender, RoutedEventArgs e) {
-            InkCanvas1.Strokes.Clear();
+            inkCanvas1.Strokes.Clear();
         }
 
         // Закрытие приложения
@@ -93,14 +100,14 @@ namespace WpfApp1 {
 
             // https://stackoverflow.com/questions/21411878/saving-a-canvas-to-png-c-sharp-wpf
 
-            Rect bounds = VisualTreeHelper.GetDescendantBounds(InkCanvas1);
+            Rect bounds = VisualTreeHelper.GetDescendantBounds(inkCanvas1);
             double dpi = 96d;
 
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, System.Windows.Media.PixelFormats.Default);
+            RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
 
             DrawingVisual dv = new DrawingVisual();
             using (DrawingContext dc = dv.RenderOpen()) {
-                VisualBrush vb = new VisualBrush(InkCanvas1);
+                VisualBrush vb = new VisualBrush(inkCanvas1);
                 dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
             }
 
@@ -123,8 +130,8 @@ namespace WpfApp1 {
         // Меняем толщину кисти
         private void NumericLimit(object sender, RoutedPropertyChangedEventArgs<object> e) {
             try {
-                InkCanvas1.DefaultDrawingAttributes.Width = (int)InkWidth.Value;
-                InkCanvas1.DefaultDrawingAttributes.Height = (int)InkWidth.Value;
+                inkCanvas1.DefaultDrawingAttributes.Width = (int)InkWidth.Value;
+                inkCanvas1.DefaultDrawingAttributes.Height = (int)InkWidth.Value;
             } catch (Exception err) {
                 InkWidth.Value = 1;
             }
@@ -132,30 +139,31 @@ namespace WpfApp1 {
         }
         // Выбираем ластик
         private void ChoiceEraser(object sender, RoutedEventArgs e) {
-            InkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255,255,255,255);
-            InkCanvas1.UseCustomCursor = true;
+            inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
+            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255,255,255,255);
+            inkCanvas1.UseCustomCursor = true;
         }
         // Выбираем кисть
         private void ChoicePen(object sender, RoutedEventArgs e) {
-            InkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
-            InkCanvas1.DefaultDrawingAttributes.Color = clr;
-            InkCanvas1.UseCustomCursor = false;
+            inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
+            inkCanvas1.DefaultDrawingAttributes.Color = clr;
+            inkCanvas1.UseCustomCursor = false;
         }
         // Выбираем "Выбрать"
         private void ChoiceSelect(object sender, RoutedEventArgs e) {
-            InkCanvas1.EditingMode = InkCanvasEditingMode.Select;
-            InkCanvas1.UseCustomCursor = false;
+            inkCanvas1.EditingMode = InkCanvasEditingMode.Select;
+            inkCanvas1.UseCustomCursor = false;
         }
         // Временный объект
         private void ChoiceTemp(object sender, RoutedEventArgs e) {
-            InkCanvas1.EditingMode = InkCanvasEditingMode.GestureOnly;
-            InkCanvas1.DefaultDrawingAttributes.Color = clr;
-            InkCanvas1.UseCustomCursor = false;
+            inkCanvas1.EditingMode = InkCanvasEditingMode.GestureOnly;
+            inkCanvas1.DefaultDrawingAttributes.Color = clr;
+            inkCanvas1.UseCustomCursor = false;
         }
 
         // Отслеживаем координаты мыши
         private void MouseMove1(object sender, MouseEventArgs e) {
-            TextBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + " Y = " + e.GetPosition(null).Y.ToString();
+            textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + " Y = " + e.GetPosition(null).Y.ToString();
         }
 
         private void MouseUp1(object sender, MouseButtonEventArgs e)
@@ -165,22 +173,23 @@ namespace WpfApp1 {
         // Раскрываем colorCanvas для выбора цвета
         private void ColorPicker(object sender, RoutedEventArgs e)
         {
-            ColorPicker1.Visibility = Visibility;
+            colorPicker1.Visibility = Visibility;
         }
-
+        // При потери фокуса у ColorPicker смена цвета кисти
         private void PickerHide(object sender, MouseEventArgs e)
         {
-            ColorPicker1.Visibility = Visibility.Hidden;
+            colorPicker1.Visibility = Visibility.Hidden;
 
-            mcolor.A = Convert.ToByte(ColorPicker1.A);
-            mcolor.R = Convert.ToByte(ColorPicker1.R);
-            mcolor.G = Convert.ToByte(ColorPicker1.G);
-            mcolor.B = Convert.ToByte(ColorPicker1.B);
+            mcolor.A = Convert.ToByte(colorPicker1.A);
+            mcolor.R = Convert.ToByte(colorPicker1.R);
+            mcolor.G = Convert.ToByte(colorPicker1.G);
+            mcolor.B = Convert.ToByte(colorPicker1.B);
 
             clr = Color.FromArgb(mcolor.A, mcolor.R, mcolor.G, mcolor.B);
 
-            InkCanvas1.DefaultDrawingAttributes.Color = clr;
+            inkCanvas1.DefaultDrawingAttributes.Color = clr;
         }
+
     }
 
     // Класс для определения цветов

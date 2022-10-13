@@ -22,13 +22,13 @@
             MouseMove="MouseMove1"
             MouseRightButtonUp="MouseUp1"
             Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2"
-            x:Name="InkCanvas1" 
+            x:Name="inkCanvas1" 
             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
             ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,5"
             />
-        <xctk:ColorCanvas x:Name="ColorPicker1" Visibility="Hidden" Height="272" Grid.Row="1" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Left"/>
+        <xctk:ColorCanvas x:Name="colorPicker1" Visibility="Hidden" Height="272" Grid.Row="1" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Left"/>
         <StackPanel Grid.Row="2">
-            <TextBlock x:Name="TextBlock1" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center"></TextBlock>
+            <TextBlock x:Name="textBlock1" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center"></TextBlock>
 
             <Button Width="64" Height="32" Content="Цвет" Margin="0,5,0,0" Click="ColorPicker" HorizontalAlignment="Center"></Button>
             <Button Width="64" Height="32" Content="Отменить" Margin="0,5,0,0" Click="Undo" HorizontalAlignment="Center"></Button>
@@ -36,7 +36,7 @@
             <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Value="6" Minimum="1" Maximum="64" ValueChanged="NumericLimit" HorizontalAlignment="Center"/>
         </StackPanel>
 
-        <StackPanel x:Name="BrushPanel" Grid.Row="2" Grid.ColumnSpan="3" Margin="341,3,341,0">
+        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="341,3,341,0">
             <Button Content="Очистить" Height="31"  Width="90" Click="ClearCanvas" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
             <Button Content="Сохранить" Height="31"  Width="90" Click="SaveCanvas" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
             <Button Content="Закрыть" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
