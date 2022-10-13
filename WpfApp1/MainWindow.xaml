@@ -20,7 +20,8 @@
         </Grid.ColumnDefinitions>
         <InkCanvas      
             MouseMove="MouseMove1"
-            MouseRightButtonUp="MouseUp1"
+            MouseLeftButtonUp="MouseLeftButtonUp1"
+            MouseRightButtonUp="MouseRightButtonUp1"
             Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2"
             x:Name="inkCanvas1" 
             ScrollViewer.HorizontalScrollBarVisibility="Auto" 

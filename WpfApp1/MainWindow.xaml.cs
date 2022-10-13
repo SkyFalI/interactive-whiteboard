@@ -67,7 +67,6 @@ namespace WpfApp1 {
         }
         // Отменить дейсвтие
         public void Undo(object sender, RoutedEventArgs e) {
-            temp = inkCanvas1.Strokes.Clone();
             int count = inkCanvas1.Strokes.Count;
 
             if (count > 0) inkCanvas1.Strokes.RemoveAt(inkCanvas1.Strokes.Count - 1);
@@ -166,7 +165,7 @@ namespace WpfApp1 {
             textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + " Y = " + e.GetPosition(null).Y.ToString();
         }
 
-        private void MouseUp1(object sender, MouseButtonEventArgs e)
+        private void MouseRightButtonUp1(object sender, MouseButtonEventArgs e)
         {
             MessageBox.Show("Hi");
         }
@@ -189,7 +188,11 @@ namespace WpfApp1 {
 
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
         }
-
+        // Клонируем inkCanvas1 в temp для UnDo/ReDo
+        private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e)
+        {
+            temp = inkCanvas1.Strokes.Clone();
+        }
     }
 
     // Класс для определения цветов
