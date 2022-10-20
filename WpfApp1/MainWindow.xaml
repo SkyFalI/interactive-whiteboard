@@ -22,31 +22,30 @@
             MouseMove="MouseMove1"
             MouseLeftButtonUp="MouseLeftButtonUp1"
             MouseRightButtonUp="MouseRightButtonUp1"
-            Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2"
+            Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3"
             x:Name="inkCanvas1" 
             ScrollViewer.HorizontalScrollBarVisibility="Auto" 
             ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,5"
             />
         <xctk:ColorCanvas x:Name="colorPicker1" Visibility="Hidden" Height="272" Grid.Row="1" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Left"/>
-        <StackPanel Grid.Row="2">
-            <TextBlock x:Name="textBlock1" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center"></TextBlock>
 
-            <Button Width="64" Height="32" Content="Цвет" Margin="0,5,0,0" Click="ColorPicker" HorizontalAlignment="Center"></Button>
-            <Button Width="64" Height="32" Content="Отменить" Margin="0,5,0,0" Click="Undo" HorizontalAlignment="Center"></Button>
-            <Button Width="64" Height="32" Content="Вернуть" Margin="0,5,0,0" Click="Redo" HorizontalAlignment="Center"></Button>
-            <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Value="6" Minimum="1" Maximum="64" ValueChanged="NumericLimit" HorizontalAlignment="Center"/>
-        </StackPanel>
+        <StackPanel MouseLeave="StackPanelHide" Visibility="Hidden" x:Name="test1" Grid.RowSpan="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFABABB3" >
 
-        <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="341,3,341,0">
             <Button Content="Очистить" Height="31"  Width="90" Click="ClearCanvas" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
             <Button Content="Сохранить" Height="31"  Width="90" Click="SaveCanvas" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
-            <Button Content="Закрыть" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
-        </StackPanel>
-        <StackPanel Grid.Row="2" Grid.Column="2">
-            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser" Margin="0,5,0,0" HorizontalAlignment="Center"></Button>
-            <Button x:Name="Pen" Content="Кисть" Height="31" Width="90" Click="ChoicePen" Margin="0,5,0,0" HorizontalAlignment="Center"></Button>
-            <Button Name="Select" Content="Выбрать" Height="31" Width="90" Click="ChoiceSelect" Margin="0,5,0,0" HorizontalAlignment="Center"></Button>
-            <Button Name="TempObject" Content="Временный" Height="31" Width="90" Click="ChoiceTemp" Margin="0,5,0,0" HorizontalAlignment="Center"></Button>
+            <Button Content="❌" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
+
+            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+            <Button x:Name="Pen" Content="🖌" Height="31" Width="90" Click="ChoicePen" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+            <Button x:Name="Select" Content="Выбрать" Height="31" Width="90" Click="ChoiceSelect" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+            <Button x:Name="TempObject" Content="Временный" Height="31" Width="90" Click="ChoiceTemp" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="textBlock1" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center"/>
+
+            <Button Width="64" Height="32" Content="Цвет" Margin="0,5,0,0" Click="ColorPicker" HorizontalAlignment="Center"/>
+            <Button Width="64" Height="32" Content="Отменить" Margin="0,5,0,0" Click="Undo" HorizontalAlignment="Center"/>
+            <Button Width="64" Height="32" Content="Вернуть" Margin="0,5,0,0" Click="Redo" HorizontalAlignment="Center"/>
+            <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Value="6" Minimum="1" Maximum="64" ValueChanged="NumericLimit" HorizontalAlignment="Center"/>
+
         </StackPanel>
     </Grid>
 </Window>

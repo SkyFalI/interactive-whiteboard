@@ -167,7 +167,10 @@ namespace WpfApp1 {
 
         private void MouseRightButtonUp1(object sender, MouseButtonEventArgs e)
         {
-            MessageBox.Show("Hi");
+            var x = e.GetPosition(null).X;
+            var y = e.GetPosition(null).Y;
+            test1.Margin = new Thickness(x, y, 0, 0);
+            test1.Visibility = Visibility;
         }
         // Раскрываем colorCanvas для выбора цвета
         private void ColorPicker(object sender, RoutedEventArgs e)
@@ -175,8 +178,8 @@ namespace WpfApp1 {
             colorPicker1.Visibility = Visibility;
         }
         // При потери фокуса у ColorPicker смена цвета кисти
-        private void PickerHide(object sender, MouseEventArgs e)
-        {
+        private void PickerHide(object sender, MouseEventArgs e) { 
+
             colorPicker1.Visibility = Visibility.Hidden;
 
             mcolor.A = Convert.ToByte(colorPicker1.A);
@@ -192,6 +195,11 @@ namespace WpfApp1 {
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e)
         {
             temp = inkCanvas1.Strokes.Clone();
+        }
+
+        private void StackPanelHide(object sender, MouseEventArgs e)
+        {
+            test1.Visibility = Visibility.Hidden;
         }
     }
 
