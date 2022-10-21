@@ -169,7 +169,17 @@ namespace WpfApp1 {
         {
             var x = e.GetPosition(null).X;
             var y = e.GetPosition(null).Y;
+
+            var mainheight = MainForm.Width;
+            var mainwidth = MainForm.Height;
+            var tbheight = test1.ActualHeight;
+            var tbWidth = test1.ActualWidth;
+            if (mainwidth / 2 < x)
+                x -= tbWidth;
+            if (mainheight / 2 < y)
+                y -= tbheight;
             test1.Margin = new Thickness(x, y, 0, 0);
+         
             test1.Visibility = Visibility;
         }
         // Раскрываем colorCanvas для выбора цвета
