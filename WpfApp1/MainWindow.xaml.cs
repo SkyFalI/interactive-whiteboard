@@ -24,8 +24,8 @@ namespace WpfApp1 {
     /// </summary>
     public partial class MainWindow : Window {
 
-        public StrokeCollection temp;
-
+        public Desk[] desks;
+        private int desknumber = 0;
         public ColorARGB mcolor { get; set; }
         public Color clr { get; set; }
         public MainWindow() {
@@ -36,6 +36,12 @@ namespace WpfApp1 {
             mcolor.A = 255; mcolor.R = mcolor.B = mcolor.G = 0;
             clr = Color.FromArgb(255, 0, 0, 0);
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
+            
+            desks = new Desk[10];
+            for (int i = 0; i < desks.Length; i++) {
+                desks[i] = new Desk();
+                desks[i].desk = inkCanvas1.Strokes.Clone();
+            }
         }
 
         // Отслеживания нажатия на клавиатуру
@@ -43,12 +49,18 @@ namespace WpfApp1 {
             base.OnKeyDown(e);
             if (e.Key == Key.Z) {
                 if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
-                    MessageBox.Show("ctrl+z"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    int count = inkCanvas1.Strokes.Count;
+
+                    if (count > 0) inkCanvas1.Strokes.RemoveAt(inkCanvas1.Strokes.Count - 1);
                 }
             }
             if (e.Key == Key.Y) {
                 if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
-                    MessageBox.Show("ctrl+y"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    try
+                    {
+                        inkCanvas1.Strokes.Add(desks[desknumber].temp[inkCanvas1.Strokes.Count]);
+                    }
+                    catch (Exception err) { MessageBox.Show("Нечего возвращать"); }
                 }
             }
             if (e.Key == Key.OemPlus) {
@@ -75,7 +87,7 @@ namespace WpfApp1 {
         public void Redo(object sender, RoutedEventArgs e) {
             try
             {
-                inkCanvas1.Strokes.Add(temp[inkCanvas1.Strokes.Count]);
+                inkCanvas1.Strokes.Add(desks[desknumber].temp[inkCanvas1.Strokes.Count]);
             }
             catch (Exception err) { MessageBox.Show("Нечего возвращать"); }
         }
@@ -164,7 +176,7 @@ namespace WpfApp1 {
         private void MouseMove1(object sender, MouseEventArgs e) {
             textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + " Y = " + e.GetPosition(null).Y.ToString();
         }
-
+        // при отпускании правой кнопки мыши вызываем ToolBar где расположена мышь 
         private void MouseRightButtonUp1(object sender, MouseButtonEventArgs e)
         {
             var x = e.GetPosition(null).X;
@@ -204,12 +216,41 @@ namespace WpfApp1 {
         // Клонируем inkCanvas1 в temp для UnDo/ReDo
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e)
         {
-            temp = inkCanvas1.Strokes.Clone();
+            desks[desknumber].temp = inkCanvas1.Strokes.Clone();
         }
-
+        // Убираем ToolBar
         private void StackPanelHide(object sender, MouseEventArgs e)
         {
             test1.Visibility = Visibility.Hidden;
+        }
+        // Меняем доску на следующую
+        private void nextDesk(object sender, RoutedEventArgs e)
+        {
+            if (desknumber < 9)
+            {
+                desks[desknumber].desk = inkCanvas1.Strokes.Clone();
+                desknumber++;
+                inkCanvas1.Strokes = desks[desknumber].desk.Clone();
+                CurrentDesk.Text = (desknumber + 1).ToString();
+            } else
+            {
+                MessageBox.Show("Это последняя доска.");
+            }
+        }
+        // Меняем доску на предыдущую
+        private void previousDesk(object sender, RoutedEventArgs e)
+        {
+            if (desknumber > 0)
+            {
+                desks[desknumber].desk = inkCanvas1.Strokes.Clone();
+                desknumber--;
+                inkCanvas1.Strokes = desks[desknumber].desk.Clone();
+                CurrentDesk.Text = (desknumber + 1).ToString();
+            }
+            else
+            {
+                MessageBox.Show("Это последняя доска.");
+            }
         }
     }
 
@@ -219,5 +260,12 @@ namespace WpfApp1 {
         public byte R { get; set; }
         public byte G { get; set; }
         public byte B { get; set; }
+    }
+    // Класс для определения досок
+    public class Desk {
+
+        public StrokeCollection desk;
+        public StrokeCollection temp;
+       
     }
 }
