@@ -46,7 +46,7 @@
             <Button Width="64" Height="32" Content="Вернуть" Margin="0,5,0,0" Click="Redo" HorizontalAlignment="Center"/>
             <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Value="6" Minimum="1" Maximum="64" ValueChanged="NumericLimit" HorizontalAlignment="Center"/>
 
-            <TextBlock Name="CurrentDesk" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center" Text="1"/>
+            <TextBlock Name="CurrentDesk" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center" Text="1 / 1"/>
             <Button Width="64" Height="32" Content="next" Margin="0,5,0,0" Click="nextDesk" HorizontalAlignment="Center"/>
             <Button Width="64" Height="32" Content="previous" Margin="0,5,0,0" Click="previousDesk" HorizontalAlignment="Center"/>
 
