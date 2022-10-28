@@ -1,20 +1,16 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 // https://github.com/xceedsoftware/wpftoolkit EXTENDED WPF TOOLS KIT
 
@@ -24,12 +20,13 @@ namespace WpfApp1 {
     /// </summary>
     public partial class MainWindow : Window {
 
-        private List<StrokeCollection> Desks = new List<StrokeCollection>();
-        private List<StrokeCollection> TempDesks = new List<StrokeCollection>();
+        //private List<StrokeCollection> Desks = new List<StrokeCollection>();
+        //private List<StrokeCollection> TempDesks = new List<StrokeCollection>();
         private int DeskNumber = 0;
 
         private ColorARGB mcolor { get; set; }
         private Color clr { get; set; }
+        private Desk desks = new Desk();
 
         public MainWindow() {
             InitializeComponent();
@@ -40,8 +37,9 @@ namespace WpfApp1 {
             clr = Color.FromArgb(255, 0, 0, 0);
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
 
-            Desks.Add(inkCanvas1.Strokes.Clone());
-            TempDesks.Add(inkCanvas1.Strokes.Clone());
+
+            desks.Desks.Add(inkCanvas1.Strokes.Clone());
+            desks.TempDesks.Add(inkCanvas1.Strokes.Clone());
         }
 
         // Отслеживания нажатия на клавиатуру
@@ -88,7 +86,7 @@ namespace WpfApp1 {
         // Кнопка вернуть
         public void Redo(object sender, RoutedEventArgs e) {
             try {
-                inkCanvas1.Strokes.Add(TempDesks[DeskNumber][inkCanvas1.Strokes.Count]);
+                inkCanvas1.Strokes.Add(desks.TempDesks[DeskNumber][inkCanvas1.Strokes.Count]);
             }
             catch (Exception err) { MessageBox.Show("Нечего возвращать"); }
         }
@@ -103,7 +101,7 @@ namespace WpfApp1 {
             SaveFileDialog SFD = new SaveFileDialog();
             SFD.Filter = "png files|*.png";
             SFD.ShowDialog();
-            
+
             //string Patch = SFD.FileName;
             // https://stackoverflow.com/questions/21411878/saving-a-canvas-to-png-c-sharp-wpf
 
@@ -142,12 +140,12 @@ namespace WpfApp1 {
             } catch (Exception err) {
                 InkWidth.Value = 1;
             }
-            
+
         }
         // Выбираем ластик
         private void ChoiceEraser(object sender, RoutedEventArgs e) {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
-            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255,255,255,255);
+            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255, 255, 255, 255);
             inkCanvas1.UseCustomCursor = true;
         }
         // Выбираем кисть
@@ -187,13 +185,13 @@ namespace WpfApp1 {
             if (mainheight / 2 < y)
                 y -= tbheight;
             test1.Margin = new Thickness(x, y, 0, 0);
-         
+
             test1.Visibility = Visibility;
         }
         // Раскрываем colorCanvas для выбора цвета
         private void ColorPicker(object sender, RoutedEventArgs e) { colorPicker1.Visibility = Visibility; }
         // При потери фокуса у ColorPicker смена цвета кисти
-        private void PickerHide(object sender, MouseEventArgs e) { 
+        private void PickerHide(object sender, MouseEventArgs e) {
 
             colorPicker1.Visibility = Visibility.Hidden;
 
@@ -208,7 +206,7 @@ namespace WpfApp1 {
         }
         // Клонируем inkCanvas1 в temp для UnDo/ReDo
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e) {
-            TempDesks[DeskNumber] = inkCanvas1.Strokes.Clone();
+            desks.TempDesks[DeskNumber] = inkCanvas1.Strokes.Clone();
         }
         // Убираем ToolBar
         private void StackPanelHide(object sender, MouseEventArgs e) {
@@ -217,41 +215,64 @@ namespace WpfApp1 {
         // Меняем доску на следующую
         private void nextDesk(object sender, RoutedEventArgs e) {
             DeskNumber++;
-            if (DeskNumber <= Desks.Count - 1) {
-                Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
-                inkCanvas1.Strokes = Desks[DeskNumber].Clone();
-                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
+            if (DeskNumber <= desks.Desks.Count - 1) {
+                desks.Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
+                inkCanvas1.Strokes = desks.Desks[DeskNumber].Clone();
+                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {desks.Desks.Count}";
             } else {
-                Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
+                desks.Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
                 inkCanvas1.Strokes.Clear();
-                Desks.Add(inkCanvas1.Strokes.Clone());
-                TempDesks.Add(inkCanvas1.Strokes.Clone());
-                inkCanvas1.Strokes = Desks[DeskNumber].Clone();
-                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
+                desks.Desks.Add(inkCanvas1.Strokes.Clone());
+                desks.TempDesks.Add(inkCanvas1.Strokes.Clone());
+                inkCanvas1.Strokes = desks.Desks[DeskNumber].Clone();
+                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {desks.Desks.Count}";
             }
         }
         // Меняем доску на предыдущую
         private void previousDesk(object sender, RoutedEventArgs e) {
             if (DeskNumber > 0) {
-                Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
+                desks.Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
                 DeskNumber--;
-                inkCanvas1.Strokes = Desks[DeskNumber].Clone();
-                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
-            } else { 
+                inkCanvas1.Strokes = desks.Desks[DeskNumber].Clone();
+                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {desks.Desks.Count}";
+            } else {
                 MessageBox.Show("Last desk");
             }
         }
         // Добавляем новую доску
         private void addDesk(object sender, RoutedEventArgs e) {
-            Desks.Add(inkCanvas1.Strokes.Clone());
+            desks.Desks.Add(inkCanvas1.Strokes.Clone());
         }
+
+        private void SaveWork(object sender, RoutedEventArgs e) {
+            SaveFileDialog SFD = new SaveFileDialog();
+            SFD.Filter = "udf files|*.udf";
+            SFD.ShowDialog();
+            FileStream fs = new FileStream(SFD.FileName, FileMode.Create);
+            BinaryFormatter formatter = new BinaryFormatter();
+            try {
+                formatter.Serialize(fs, desks);
+            } catch (Exception err) {
+                MessageBox.Show(string.Format("Неудача при сохранении, тип ошибки {0}", err.ToString()));
+            } finally {
+                fs.Close();
+            }
+        }
+
+        private void LoadWork(object sender, RoutedEventArgs e){
+            OpenFileDialog OFD = new OpenFileDialog();
+            OFD.Filter = "udf files|*.udf";
+            
+        }
+
     }
 
+
     // Класс для определения цветов
-    public class ColorARGB {
-        public byte A { get; set; }
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
+    public class ColorARGB { public byte A, R, G, B; }
+    [Serializable]
+    public class Desk{
+        public List<StrokeCollection> Desks = new List<StrokeCollection>();
+        public List<StrokeCollection> TempDesks = new List<StrokeCollection>();
     }
 }
