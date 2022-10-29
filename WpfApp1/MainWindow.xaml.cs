@@ -1,16 +1,14 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Newtonsoft.Json;
 
 // https://github.com/xceedsoftware/wpftoolkit EXTENDED WPF TOOLS KIT
 
@@ -19,57 +17,42 @@ namespace WpfApp1 {
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-
-        //private List<StrokeCollection> Desks = new List<StrokeCollection>();
-        //private List<StrokeCollection> TempDesks = new List<StrokeCollection>();
-        private int DeskNumber = 0;
-
         private ColorARGB mcolor { get; set; }
         private Color clr { get; set; }
-        private Desk desks = new Desk();
 
-        public MainWindow() {
+        private List<StrokeCollection> Desks { get; set; } = new List<StrokeCollection>();
+        private int DeskNumber = 0;
+
+        public MainWindow()
+        {
             InitializeComponent();
             inkCanvas1.Cursor = Cursors.Cross;
 
             mcolor = new ColorARGB();
-            mcolor.A = 255; mcolor.R = mcolor.B = mcolor.G = 0;
             clr = Color.FromArgb(255, 0, 0, 0);
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
 
-
-            desks.Desks.Add(inkCanvas1.Strokes.Clone());
-            desks.TempDesks.Add(inkCanvas1.Strokes.Clone());
+            Desks.Add(inkCanvas1.Strokes.Clone());
         }
 
         // Отслеживания нажатия на клавиатуру
-        protected override void OnKeyDown(KeyEventArgs e) {
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
             base.OnKeyDown(e);
-            if (e.Key == Key.Z) {
-                if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+            //Изменение масштаба пера
+            InkWidth.Value += Convert.ToInt32(e.Key == Key.OemPlus || e.Key == Key.Add);
+            InkWidth.Value -= Convert.ToInt32(e.Key == Key.OemMinus || e.Key == Key.Subtract);
+            // Быстрые действия
+            if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                if (e.Key == Key.Z)
                     Undo(this, e);
-                }
-            }
-            if (e.Key == Key.Y) {
-                if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+                else if (e.Key == Key.Y)
                     Redo(this, e);
-                }
-            }
-            if (e.Key == Key.OemPlus) {
-                InkWidth.Value++;
-            }
-            if (e.Key == Key.OemMinus) {
-                InkWidth.Value--;
-            }
-            if (e.Key == Key.Left) {
-                if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+                else if (e.Key == Key.Left)
                     previousDesk(this, e);
-                }
-            }
-            if (e.Key == Key.Right) {
-                if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control) {
+                else if (e.Key == Key.Right)
                     nextDesk(this, e);
-                }
             }
             // Если понадобится нажатия трех клавиш
             ModifierKeys combCtrSh = ModifierKeys.Control | ModifierKeys.Shift;
@@ -80,23 +63,29 @@ namespace WpfApp1 {
             }
         }
         // Отменить дейсвтие
-        public void Undo(object sender, RoutedEventArgs e) {
+        public void Undo(object sender, RoutedEventArgs e)
+        {
             if (inkCanvas1.Strokes.Count > 0) inkCanvas1.Strokes.RemoveAt(inkCanvas1.Strokes.Count - 1);
         }
         // Кнопка вернуть
-        public void Redo(object sender, RoutedEventArgs e) {
-            try {
-                inkCanvas1.Strokes.Add(desks.TempDesks[DeskNumber][inkCanvas1.Strokes.Count]);
+        public void Redo(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                inkCanvas1.Strokes.Add(Desks[DeskNumber][inkCanvas1.Strokes.Count]);
             }
-            catch (Exception err) { MessageBox.Show("Нечего возвращать"); }
+            catch { MessageBox.Show("Нечего возвращать"); }
         }
+
         // Очистка доски
         private void ClearCanvas(object sender, RoutedEventArgs e) { inkCanvas1.Strokes.Clear(); }
+
         // Закрытие приложения
         private void CloseApp(object sender, RoutedEventArgs e) { this.Close(); }
 
         // Сохраняем свое творчество
-        private void SaveCanvas(object sender, RoutedEventArgs e) {
+        private void SaveCanvas(object sender, RoutedEventArgs e)
+        {
 
             SaveFileDialog SFD = new SaveFileDialog();
             SFD.Filter = "png files|*.png";
@@ -111,7 +100,8 @@ namespace WpfApp1 {
             RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
 
             DrawingVisual dv = new DrawingVisual();
-            using (DrawingContext dc = dv.RenderOpen()) {
+            using (DrawingContext dc = dv.RenderOpen())
+            {
                 VisualBrush vb = new VisualBrush(inkCanvas1);
                 dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
             }
@@ -121,53 +111,58 @@ namespace WpfApp1 {
             BitmapEncoder pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
 
-            try {
+            try
+            {
                 MemoryStream ms = new MemoryStream();
                 pngEncoder.Save(ms);
                 ms.Close();
                 File.WriteAllBytes(SFD.FileName, ms.ToArray());
             }
-            catch (Exception err) {
-                // MessageBox.Show(err.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            catch { /*MessageBox.Show(err.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);*/ }
         }
 
         // Меняем толщину кисти
-        private void NumericLimit(object sender, RoutedPropertyChangedEventArgs<object> e) {
-            try {
+        private void NumericLimit(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            try
+            {
                 inkCanvas1.DefaultDrawingAttributes.Width = (int)InkWidth.Value;
                 inkCanvas1.DefaultDrawingAttributes.Height = (int)InkWidth.Value;
-            } catch (Exception err) {
-                InkWidth.Value = 1;
             }
+            catch { InkWidth.Value = 1; }
 
         }
         // Выбираем ластик
-        private void ChoiceEraser(object sender, RoutedEventArgs e) {
+        private void ChoiceEraser(object sender, RoutedEventArgs e)
+        {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
             inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255, 255, 255, 255);
             inkCanvas1.UseCustomCursor = true;
         }
         // Выбираем кисть
-        private void ChoicePen(object sender, RoutedEventArgs e) {
+        private void ChoicePen(object sender, RoutedEventArgs e)
+        {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
             inkCanvas1.UseCustomCursor = false;
         }
         // Выбираем "Выбрать"
-        private void ChoiceSelect(object sender, RoutedEventArgs e) {
+        private void ChoiceSelect(object sender, RoutedEventArgs e)
+        {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Select;
             inkCanvas1.UseCustomCursor = false;
         }
         // Временный объект
-        private void ChoiceTemp(object sender, RoutedEventArgs e) {
+        private void ChoiceTemp(object sender, RoutedEventArgs e)
+        {
             inkCanvas1.EditingMode = InkCanvasEditingMode.GestureOnly;
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
             inkCanvas1.UseCustomCursor = false;
         }
 
         // Отслеживаем координаты мыши
-        private void MouseMove1(object sender, MouseEventArgs e) {
+        private void MouseMove1(object sender, MouseEventArgs e)
+        {
             textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + " Y = " + e.GetPosition(null).Y.ToString();
         }
         // при отпускании правой кнопки мыши вызываем ToolBar где распaположена мышь
@@ -191,88 +186,104 @@ namespace WpfApp1 {
         // Раскрываем colorCanvas для выбора цвета
         private void ColorPicker(object sender, RoutedEventArgs e) { colorPicker1.Visibility = Visibility; }
         // При потери фокуса у ColorPicker смена цвета кисти
-        private void PickerHide(object sender, MouseEventArgs e) {
+        private void PickerHide(object sender, MouseEventArgs e)
+        {
 
             colorPicker1.Visibility = Visibility.Hidden;
 
-            mcolor.A = Convert.ToByte(colorPicker1.A);
-            mcolor.R = Convert.ToByte(colorPicker1.R);
-            mcolor.G = Convert.ToByte(colorPicker1.G);
-            mcolor.B = Convert.ToByte(colorPicker1.B);
+            mcolor.A = colorPicker1.A;
+            mcolor.R = colorPicker1.R;
+            mcolor.G = colorPicker1.G;
+            mcolor.B = colorPicker1.B;
 
             clr = Color.FromArgb(mcolor.A, mcolor.R, mcolor.G, mcolor.B);
 
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
         }
         // Клонируем inkCanvas1 в temp для UnDo/ReDo
-        private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e) {
-            desks.TempDesks[DeskNumber] = inkCanvas1.Strokes.Clone();
+        private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e)
+        {
+            Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
         }
         // Убираем ToolBar
-        private void StackPanelHide(object sender, MouseEventArgs e) {
+        private void StackPanelHide(object sender, MouseEventArgs e)
+        {
             test1.Visibility = Visibility.Hidden;
         }
         // Меняем доску на следующую
-        private void nextDesk(object sender, RoutedEventArgs e) {
+        private void nextDesk(object sender, RoutedEventArgs e)
+        {
             DeskNumber++;
-            if (DeskNumber <= desks.Desks.Count - 1) {
-                desks.Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
-                inkCanvas1.Strokes = desks.Desks[DeskNumber].Clone();
-                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {desks.Desks.Count}";
-            } else {
-                desks.Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
+            if (DeskNumber <= Desks.Count - 1)
+            {
+                Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
+                inkCanvas1.Strokes = Desks[DeskNumber].Clone();
+                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
+            }
+            else
+            {
+                Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
                 inkCanvas1.Strokes.Clear();
-                desks.Desks.Add(inkCanvas1.Strokes.Clone());
-                desks.TempDesks.Add(inkCanvas1.Strokes.Clone());
-                inkCanvas1.Strokes = desks.Desks[DeskNumber].Clone();
-                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {desks.Desks.Count}";
+                Desks.Add(inkCanvas1.Strokes.Clone());
+                inkCanvas1.Strokes = Desks[DeskNumber].Clone();
+                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
             }
         }
         // Меняем доску на предыдущую
-        private void previousDesk(object sender, RoutedEventArgs e) {
-            if (DeskNumber > 0) {
-                desks.Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
+        private void previousDesk(object sender, RoutedEventArgs e)
+        {
+            if (DeskNumber > 0)
+            {
+                Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
                 DeskNumber--;
-                inkCanvas1.Strokes = desks.Desks[DeskNumber].Clone();
-                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {desks.Desks.Count}";
-            } else {
+                inkCanvas1.Strokes = Desks[DeskNumber].Clone();
+                CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
+            }
+            else
+            {
                 MessageBox.Show("Last desk");
             }
         }
         // Добавляем новую доску
-        private void addDesk(object sender, RoutedEventArgs e) {
-            desks.Desks.Add(inkCanvas1.Strokes.Clone());
+        private void addDesk(object sender, RoutedEventArgs e)
+        {
+            Desks.Add(inkCanvas1.Strokes.Clone());
         }
 
-        private void SaveWork(object sender, RoutedEventArgs e) {
-            SaveFileDialog SFD = new SaveFileDialog();
-            SFD.Filter = "udf files|*.udf";
-            SFD.ShowDialog();
-            FileStream fs = new FileStream(SFD.FileName, FileMode.Create);
-            BinaryFormatter formatter = new BinaryFormatter();
-            try {
-                formatter.Serialize(fs, desks);
-            } catch (Exception err) {
-                MessageBox.Show(string.Format("Неудача при сохранении, тип ошибки {0}", err.ToString()));
-            } finally {
-                fs.Close();
+        private void SaveDesks(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "udf files|*.udf";
+            saveFileDialog.ShowDialog();
+            string[] desks = new string[Desks.Count];
+            StrokeCollectionConverter converter = new StrokeCollectionConverter();
+            for (int i = 0; i < Desks.Count; i++)
+            {
+                desks[i] = converter.ConvertToString(Desks[i]);
             }
+            string json = JsonConvert.SerializeObject(desks);
+            File.WriteAllText(saveFileDialog.FileName, json);
         }
+        private void LoadDesks(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "udf files|*.udf";
+            openFileDialog.ShowDialog();
 
-        private void LoadWork(object sender, RoutedEventArgs e){
-            OpenFileDialog OFD = new OpenFileDialog();
-            OFD.Filter = "udf files|*.udf";
-            
+            StrokeCollectionConverter converter = new StrokeCollectionConverter();
+            Desks.Clear();
+            string readText = File.ReadAllText(openFileDialog.FileName);
+            string[] desks = JsonConvert.DeserializeObject<string[]>(readText);
+            foreach (var i in desks)
+            {
+                Desks.Add((StrokeCollection)converter.ConvertFromString(i));
+            }
+            DeskNumber = 0;
+            inkCanvas1.Strokes = Desks[DeskNumber].Clone();
         }
-
     }
-
 
     // Класс для определения цветов
     public class ColorARGB { public byte A, R, G, B; }
-    [Serializable]
-    public class Desk{
-        public List<StrokeCollection> Desks = new List<StrokeCollection>();
-        public List<StrokeCollection> TempDesks = new List<StrokeCollection>();
-    }
+
 }
