@@ -26,6 +26,7 @@ namespace WpfApp1 {
         public MainWindow()
         {
             InitializeComponent();
+
             inkCanvas1.Cursor = Cursors.Cross;
 
             mcolor = new ColorARGB();
@@ -45,6 +46,7 @@ namespace WpfApp1 {
             // Быстрые действия
             if ((e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
+                inkCanvas1.EditingMode = InkCanvasEditingMode.None;
                 if (e.Key == Key.Z)
                     Undo(this, e);
                 else if (e.Key == Key.Y)
@@ -61,6 +63,7 @@ namespace WpfApp1 {
                 if ((e.KeyboardDevice.Modifiers & combCtrSh) == combCtrSh)
                     MessageBox.Show("Ctrl+Shift+B");
             }
+            
         }
         // Отменить дейсвтие
         public void Undo(object sender, RoutedEventArgs e)
@@ -163,25 +166,7 @@ namespace WpfApp1 {
         // Отслеживаем координаты мыши
         private void MouseMove1(object sender, MouseEventArgs e)
         {
-            textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + " Y = " + e.GetPosition(null).Y.ToString();
-        }
-        // при отпускании правой кнопки мыши вызываем ToolBar где распaположена мышь
-        private void MouseRightButtonUp1(object sender, MouseButtonEventArgs e)
-        {
-            var x = e.GetPosition(null).X;
-            var y = e.GetPosition(null).Y;
-
-            var mainheight = MainForm.Width;
-            var mainwidth = MainForm.Height;
-            var tbheight = test1.ActualHeight;
-            var tbWidth = test1.ActualWidth;
-            if (mainwidth / 2 < x)
-                x -= tbWidth;
-            if (mainheight / 2 < y)
-                y -= tbheight;
-            test1.Margin = new Thickness(x, y, 0, 0);
-
-            test1.Visibility = Visibility;
+            textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + "\nY = " + e.GetPosition(null).Y.ToString();
         }
         // Раскрываем colorCanvas для выбора цвета
         private void ColorPicker(object sender, RoutedEventArgs e) { colorPicker1.Visibility = Visibility; }
@@ -204,11 +189,6 @@ namespace WpfApp1 {
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e)
         {
             Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
-        }
-        // Убираем ToolBar
-        private void StackPanelHide(object sender, MouseEventArgs e)
-        {
-            test1.Visibility = Visibility.Hidden;
         }
         // Меняем доску на следующую
         private void nextDesk(object sender, RoutedEventArgs e)
@@ -280,6 +260,16 @@ namespace WpfApp1 {
             }
             DeskNumber = 0;
             inkCanvas1.Strokes = Desks[DeskNumber].Clone();
+        }
+
+        private void ChoiceHand(object sender, RoutedEventArgs e)
+        {
+            inkCanvas1.EditingMode = InkCanvasEditingMode.None;
+        }
+
+        private void ReturnINK(object sender, KeyEventArgs e)
+        {
+                inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
         }
     }
 

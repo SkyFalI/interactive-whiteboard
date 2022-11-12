@@ -6,51 +6,65 @@
         xmlns:local="clr-namespace:WpfApp1"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="WpfApp1.MainWindow"
         mc:Ignorable="d"
-        Name ="MainForm" Title="MainWindow" MinHeight="800" MinWidth="1024" Height="800" Width="1024" WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip">
+        Name ="MainForm" Title="MainWindow" MinHeight="800" MinWidth="1024" Height="800" Width="1024" WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip" KeyUp="ReturnINK">
+
+        
     <Grid Background="Lavender">
         <Grid.RowDefinitions>
-            <RowDefinition Height="261*"/>
-            <RowDefinition Height="341*"/>
-            <RowDefinition Height="182*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="82"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <InkCanvas      
-            MouseMove="MouseMove1"
-            MouseLeftButtonUp="MouseLeftButtonUp1"
-            MouseRightButtonUp="MouseRightButtonUp1"
-            Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="3"
-            x:Name="inkCanvas1" 
-            ScrollViewer.HorizontalScrollBarVisibility="Auto" 
-            ScrollViewer.VerticalScrollBarVisibility="Auto" Margin="0,0,0,5"
-            />
-        <xctk:ColorCanvas x:Name="colorPicker1" Visibility="Hidden" Height="272" Grid.Row="1" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Left"/>
+        <xctk:Zoombox Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3">
+            <InkCanvas      
+                    MouseMove="MouseMove1"
+                    MouseLeftButtonUp="MouseLeftButtonUp1"
+                    x:Name="inkCanvas1" />
+        </xctk:Zoombox>        
+        <xctk:ColorCanvas x:Name="colorPicker1" Visibility="Hidden" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Center" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
+ 
+        <ToolBarTray Orientation="Vertical"  Grid.Row="0" Grid.RowSpan="3">
+            <ToolBar Width="82" VerticalAlignment="Top">                
 
-        <StackPanel MouseLeave="StackPanelHide" Visibility="Hidden" x:Name="test1" Grid.RowSpan="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" VerticalAlignment="Top" Background="#FFABABB3" >
-
-            <Button Content="Очистить" Height="31"  Width="90" Click="ClearCanvas" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
-            <Button Content="Сохранить" Height="31"  Width="90" Click="SaveCanvas" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
-            <Button Content="❌" Height="31"  Width="90" Click="CloseApp" Margin="0, 5, 0 ,5" HorizontalAlignment="Center"/>
-
-            <Button x:Name="EraserButton" Content="Ластик" Height="31" Width="90" Click="ChoiceEraser" Margin="0,5,0,0" HorizontalAlignment="Center"/>
-            <Button x:Name="Pen" Content="🖌" Height="31" Width="90" Click="ChoicePen" Margin="0,5,0,0" HorizontalAlignment="Center"/>
-            <Button x:Name="Select" Content="Выбрать" Height="31" Width="90" Click="ChoiceSelect" Margin="0,5,0,0" HorizontalAlignment="Center"/>
-            <Button x:Name="TempObject" Content="Временный" Height="31" Width="90" Click="ChoiceTemp" Margin="0,5,0,0" HorizontalAlignment="Center"/>
-            <TextBlock x:Name="textBlock1" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center"/>
-
-            <Button Width="64" Height="32" Content="Цвет" Margin="0,5,0,0" Click="ColorPicker" HorizontalAlignment="Center"/>
-            <Button Width="64" Height="32" Content="Отменить" Margin="0,5,0,0" Click="Undo" HorizontalAlignment="Center"/>
-            <Button Width="64" Height="32" Content="Вернуть" Margin="0,5,0,0" Click="Redo" HorizontalAlignment="Center"/>
-            <xctk:IntegerUpDown Margin="0,5,0,0" x:Name="InkWidth"  Width="64" Height="32" Value="6" Minimum="1" Maximum="64" ValueChanged="NumericLimit" HorizontalAlignment="Center"/>
-
-            <TextBlock Name="CurrentDesk" Height="16" Margin="0,5,0,0" HorizontalAlignment="Center" Text="1 / 1"/>
-            <Button Width="64" Height="32" Content="next" Margin="0,5,0,0" Click="nextDesk" HorizontalAlignment="Center"/>
-            <Button Width="64" Height="32" Content="previous" Margin="0,5,0,0" Click="previousDesk" HorizontalAlignment="Center"/>
-            <Button Width="64" Height="32" Content="SaveFile" Margin="0,5,0,0" Click="SaveDesks" HorizontalAlignment="Center"/>
-            <Button Width="64" Height="32" Content="LoadFile" Margin="0,5,0,0" Click="LoadDesks" HorizontalAlignment="Center"/>
-        </StackPanel>
+                <Button Content="Очистить" Click="ClearCanvas"/>
+                <Button Content="Сохранить" Click="SaveCanvas"/>
+                <Button Content="Выход" Click="CloseApp" />
+                <Separator />
+                
+                <Button x:Name="Hand" Content="Рука" Click="ChoiceHand"/>
+                <Button x:Name="EraserButton" Content="Ластик"  Click="ChoiceEraser"/>
+                <Button x:Name="Pen" Content="Кисточка" Click="ChoicePen" />
+                <Button x:Name="Select" Content="Выбрать" Click="ChoiceSelect"  />
+                <Button x:Name="TempObject" Content="Temp" Click="ChoiceTemp"  />
+                <TextBlock x:Name="textBlock1" TextAlignment="Center"/>
+                <Separator />
+                <xctk:IntegerUpDown x:Name="InkWidth" Value="6" Minimum="1" Maximum="64" ValueChanged="NumericLimit"/>
+                <Button  Content="Цвет"  Click="ColorPicker" />
+                <Button  Content="Отменить"  Click="Undo" />
+                <Button  Content="Вернуть"  Click="Redo" />
+                <Separator />
+                <TextBlock Name="CurrentDesk" Height="16" Text="1 / 1" TextAlignment="Center"/>
+                <Button Click="nextDesk">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center">Следующая Доска</TextBlock>
+                </Button>
+                <Button Click="previousDesk">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center">Предыдущая доска</TextBlock>
+                </Button>
+                <Separator />
+                <Button Click="SaveDesks">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center">Сохранить доски</TextBlock>
+                </Button>
+                <Button Click="LoadDesks">
+                    <TextBlock TextWrapping="Wrap" TextAlignment="Center">Загрузить доски</TextBlock>
+                </Button>
+                <Separator />
+            </ToolBar>
+        </ToolBarTray>
     </Grid>
 </Window>
