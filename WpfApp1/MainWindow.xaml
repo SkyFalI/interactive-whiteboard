@@ -25,18 +25,19 @@
             <InkCanvas      
                     MouseMove="MouseMove1"
                     MouseLeftButtonUp="MouseLeftButtonUp1"
-                    x:Name="inkCanvas1" />
+                    x:Name="inkCanvas1"
+                />
         </xctk:Zoombox>        
         <xctk:ColorCanvas x:Name="colorPicker1" Visibility="Hidden" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Center" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
- 
+
         <ToolBarTray Orientation="Vertical"  Grid.Row="0" Grid.RowSpan="3">
-            <ToolBar Width="82" VerticalAlignment="Top">                
+            <ToolBar Width="82" VerticalAlignment="Top">
 
                 <Button Content="Очистить" Click="ClearCanvas"/>
                 <Button Content="Сохранить" Click="SaveCanvas"/>
                 <Button Content="Выход" Click="CloseApp" />
                 <Separator />
-                
+
                 <Button x:Name="Hand" Content="Рука" Click="ChoiceHand"/>
                 <Button x:Name="EraserButton" Content="Ластик"  Click="ChoiceEraser"/>
                 <Button x:Name="Pen" Content="Кисточка" Click="ChoicePen" />

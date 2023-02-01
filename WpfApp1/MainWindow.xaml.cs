@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Newtonsoft.Json;
+using iTextSharp.text.pdf;
 
 // https://github.com/xceedsoftware/wpftoolkit EXTENDED WPF TOOLS KIT
 
@@ -32,9 +33,11 @@ namespace WpfApp1 {
             mcolor = new ColorARGB();
             clr = Color.FromArgb(255, 0, 0, 0);
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
+            inkCanvas1.DefaultDrawingAttributes.FitToCurve = true;
 
             Desks.Add(inkCanvas1.Strokes.Clone());
         }
+
 
         // Отслеживания нажатия на клавиатуру
         protected override void OnKeyDown(KeyEventArgs e)
@@ -86,42 +89,63 @@ namespace WpfApp1 {
         // Закрытие приложения
         private void CloseApp(object sender, RoutedEventArgs e) { this.Close(); }
 
-        // Сохраняем свое творчество
-        private void SaveCanvas(object sender, RoutedEventArgs e)
-        {
+        // Сохраняем свое творчество в pdf используя iTextSharp из NuGet пакетов
+        private void SaveCanvas(object sender, RoutedEventArgs e){
 
             SaveFileDialog SFD = new SaveFileDialog();
-            SFD.Filter = "png files|*.png";
+            SFD.Filter = "pdf files|*.pdf";
             SFD.ShowDialog();
 
-            //string Patch = SFD.FileName;
             // https://stackoverflow.com/questions/21411878/saving-a-canvas-to-png-c-sharp-wpf
+            if (SFD.FileName == "") return;
+            var stream = new FileStream(SFD.FileName, FileMode.Append, FileAccess.Write, FileShare.None);
 
-            Rect bounds = VisualTreeHelper.GetDescendantBounds(inkCanvas1);
-            double dpi = 96d;
+            iTextSharp.text.Document document = new iTextSharp.text.Document();
+            document.SetPageSize(iTextSharp.text.PageSize.A4.Rotate());
+            document.SetMargins(10, 10, 10, 10);
 
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+            PdfWriter.GetInstance(document, stream);
+            document.Open();
+            StrokeCollection temp = Desks[DeskNumber].Clone();
 
-            DrawingVisual dv = new DrawingVisual();
-            using (DrawingContext dc = dv.RenderOpen())
+            for (int i = 0; i < Desks.Count; i++)
             {
-                VisualBrush vb = new VisualBrush(inkCanvas1);
-                dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+                inkCanvas1.Strokes = Desks[i].Clone();
+                Rect bounds = VisualTreeHelper.GetDescendantBounds(inkCanvas1);
+                double dpi = 96d;
+
+                RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+
+                DrawingVisual dv = new DrawingVisual();
+
+                using (DrawingContext dc = dv.RenderOpen()) {
+                    VisualBrush vb = new VisualBrush(inkCanvas1);
+                    dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+                }
+
+                rtb.Render(dv);
+
+                MemoryStream fs = new MemoryStream();
+                JpegBitmapEncoder encoder1 = new JpegBitmapEncoder();
+                encoder1.Frames.Add(BitmapFrame.Create(rtb));
+                encoder1.Save(fs);
+                byte[] tArr = fs.ToArray();
+
+                iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(tArr);  
+                    
+                image.Alignment = iTextSharp.text.Element.ALIGN_CENTER;
+                image.ScaleAbsolute(120f, 155.25f);
+
+                document.Add(image);
+                document.NewPage();
+                fs.Close();
+                rtb.Clear();
             }
 
-            rtb.Render(dv);
 
-            BitmapEncoder pngEncoder = new PngBitmapEncoder();
-            pngEncoder.Frames.Add(BitmapFrame.Create(rtb));
+            document.Close();
+            inkCanvas1.Strokes = temp.Clone();
 
-            try
-            {
-                MemoryStream ms = new MemoryStream();
-                pngEncoder.Save(ms);
-                ms.Close();
-                File.WriteAllBytes(SFD.FileName, ms.ToArray());
-            }
-            catch { /*MessageBox.Show(err.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);*/ }
         }
 
         // Меняем толщину кисти
@@ -139,7 +163,7 @@ namespace WpfApp1 {
         private void ChoiceEraser(object sender, RoutedEventArgs e)
         {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
-            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255, 255, 255, 255);
+            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(0, 255, 255, 255);
             inkCanvas1.UseCustomCursor = true;
         }
         // Выбираем кисть
@@ -149,7 +173,7 @@ namespace WpfApp1 {
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
             inkCanvas1.UseCustomCursor = false;
         }
-        // Выбираем "Выбрать"
+        // Выбираем "Выбрать"a
         private void ChoiceSelect(object sender, RoutedEventArgs e)
         {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Select;
@@ -167,6 +191,13 @@ namespace WpfApp1 {
         private void MouseMove1(object sender, MouseEventArgs e)
         {
             textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + "\nY = " + e.GetPosition(null).Y.ToString();
+
+/*          Отслеживавние нажатия на левую кнопку мыши    
+            if (Mouse.LeftButton == MouseButtonState.Pressed)
+            {      
+            }
+*/
+
         }
         // Раскрываем colorCanvas для выбора цвета
         private void ColorPicker(object sender, RoutedEventArgs e) { colorPicker1.Visibility = Visibility; }
@@ -189,6 +220,7 @@ namespace WpfApp1 {
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e)
         {
             Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
+
         }
         // Меняем доску на следующую
         private void nextDesk(object sender, RoutedEventArgs e)
