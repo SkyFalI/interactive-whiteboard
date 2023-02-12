@@ -65,10 +65,14 @@ namespace WpfApp1 {
         }
         // Отменить дейсвтие
         public void Undo(object sender, RoutedEventArgs e) {
+            EraserButton.IsChecked = false;
+            EraserStroke.IsChecked = false;
             if (inkCanvas1.Strokes.Count > 0) inkCanvas1.Strokes.RemoveAt(inkCanvas1.Strokes.Count - 1);
         }
         // Кнопка вернуть
         public void Redo(object sender, RoutedEventArgs e) {
+            EraserButton.IsChecked = false;
+            EraserStroke.IsChecked = false;
             try {
                 inkCanvas1.Strokes.Add(Desks[DeskNumber][inkCanvas1.Strokes.Count]);
             } catch { MessageBox.Show("Нечего возвращать"); }
@@ -142,17 +146,31 @@ namespace WpfApp1 {
         }
         // Выбираем ластик
         private void ChoiceEraser(object sender, RoutedEventArgs e) {
+
+            /*
             inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
-            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(0, 255, 255, 255);
+            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255, 255, 255, 255);
             inkCanvas1.UseCustomCursor = true;
+            */
+            if (EraserButton.IsChecked == true)
+                inkCanvas1.EditingMode = InkCanvasEditingMode.EraseByPoint;
+            else
+                inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
         }
+        private void ChoiceEraserBytStroke(object sender, RoutedEventArgs e) {
+            if (EraserStroke.IsChecked == true)
+                inkCanvas1.EditingMode = InkCanvasEditingMode.EraseByStroke;
+            else
+                inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
+        }
+
         // Выбираем кисть
         private void ChoicePen(object sender, RoutedEventArgs e) {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
             inkCanvas1.DefaultDrawingAttributes.Color = clr;
             inkCanvas1.UseCustomCursor = false;
         }
-        // Выбираем "Выбрать"a
+        // Выбираем "Выбрать"
         private void ChoiceSelect(object sender, RoutedEventArgs e) {
             inkCanvas1.EditingMode = InkCanvasEditingMode.Select;
             inkCanvas1.UseCustomCursor = false;
@@ -193,8 +211,10 @@ namespace WpfApp1 {
         }
         // Клонируем inkCanvas1 в temp для UnDo/ReDo
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e) {
-            Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
-
+            if (EraserStroke.IsChecked == false & EraserButton.IsChecked == false) {
+                Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
+                MessageBox.Show("Save!");
+            }
         }
         // Меняем доску на следующую
         private void nextDesk(object sender, RoutedEventArgs e) {
@@ -283,6 +303,7 @@ namespace WpfApp1 {
             else
                 inkCanvas1.DefaultDrawingAttributes.IsHighlighter = false;
         }
+
     }
 
     // Класс для определения цветов
