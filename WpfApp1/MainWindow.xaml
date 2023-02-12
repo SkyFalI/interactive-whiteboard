@@ -41,6 +41,8 @@
                 <Button x:Name="Hand" Content="Рука" Click="ChoiceHand"/>
                 <Button x:Name="EraserButton" Content="Ластик"  Click="ChoiceEraser"/>
                 <Button x:Name="Pen" Content="Кисточка" Click="ChoicePen" />
+                <CheckBox x:Name="FXAA" Content="Безье" Click="onOffFXAA"/>
+                <CheckBox x:Name="Highlither" Content="Маркер" Click="onOffHighlither"/>
                 <Button x:Name="Select" Content="Выбрать" Click="ChoiceSelect"  />
                 <Button x:Name="TempObject" Content="Temp" Click="ChoiceTemp"  />
                 <TextBlock x:Name="textBlock1" TextAlignment="Center"/>
