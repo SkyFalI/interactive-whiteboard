@@ -22,6 +22,7 @@ namespace WpfApp1 {
         private Color clr { get; set; }
 
         private List<StrokeCollection> Desks { get; set; } = new List<StrokeCollection>();
+
         private int DeskNumber = 0;
 
         public MainWindow() {
@@ -102,35 +103,42 @@ namespace WpfApp1 {
             PdfWriter.GetInstance(document, stream);
             document.Open();
 
-            Rect bounds = VisualTreeHelper.GetDescendantBounds(inkCanvas1);
-            double dpi = 96d;
+            StrokeCollection temp = inkCanvas1.Strokes;
 
-            RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
+            for (int i = 0; i < Desks.Count; i++) {
+                inkCanvas1.Strokes = Desks[i];
+                Rect bounds = VisualTreeHelper.GetDescendantBounds(inkCanvas1);
+                double dpi = 96d;
 
-            DrawingVisual dv = new DrawingVisual();
+                RenderTargetBitmap rtb = new RenderTargetBitmap((int)bounds.Width, (int)bounds.Height, dpi, dpi, PixelFormats.Default);
 
-            using (DrawingContext dc = dv.RenderOpen()) {
-                VisualBrush vb = new VisualBrush(inkCanvas1);
-                dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+                DrawingVisual dv = new DrawingVisual();
+
+                using (DrawingContext dc = dv.RenderOpen()) {
+                    VisualBrush vb = new VisualBrush(inkCanvas1);
+                    dc.DrawRectangle(vb, null, new Rect(new Point(), bounds.Size));
+                }
+
+                rtb.Render(dv);
+
+                MemoryStream fs = new MemoryStream();
+                JpegBitmapEncoder encoder1 = new JpegBitmapEncoder();
+                encoder1.Frames.Add(BitmapFrame.Create(rtb));
+                encoder1.Save(fs);
+                byte[] tArr = fs.ToArray();
+
+                iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(tArr);
+
+                image.Alignment = iTextSharp.text.Element.ALIGN_CENTER;
+                image.ScaleToFit(document.PageSize.Width - 10, document.PageSize.Height - 10);
+
+                document.Add(image);
+                document.NewPage();
+                fs.Close();
+                rtb.Clear();
             }
 
-            rtb.Render(dv);
-
-            MemoryStream fs = new MemoryStream();
-            JpegBitmapEncoder encoder1 = new JpegBitmapEncoder();
-            encoder1.Frames.Add(BitmapFrame.Create(rtb));
-            encoder1.Save(fs);
-            byte[] tArr = fs.ToArray();
-
-            iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(tArr);
-
-            image.Alignment = iTextSharp.text.Element.ALIGN_CENTER;
-            image.ScaleAbsolute(120f, 155.25f);
-
-            document.Add(image);
-            document.NewPage();
-            fs.Close();
-            rtb.Clear();
+            inkCanvas1.Strokes = temp;
 
             document.Close();
 
@@ -184,13 +192,12 @@ namespace WpfApp1 {
 
         // Отслеживаем координаты мыши
         private void MouseMove1(object sender, MouseEventArgs e) {
-            textBlock1.Text = "X = " + e.GetPosition(null).X.ToString() + "\nY = " + e.GetPosition(null).Y.ToString();
+            textBlock1.Text = "X = " + Convert.ToInt32(e.GetPosition(inkCanvas1).X).ToString() + "\nY = " + Convert.ToInt32(e.GetPosition(inkCanvas1).Y).ToString();
+            if (Mouse.LeftButton == MouseButtonState.Pressed) {
+                if (e.GetPosition(inkCanvas1).X > inkCanvas1.Width - 15) inkCanvas1.Width += 20;
+                if (e.GetPosition(inkCanvas1).Y > inkCanvas1.Height - 15) inkCanvas1.Height += 20;
 
-            /*          Отслеживавние нажатия на левую кнопку мыши    
-                        if (Mouse.LeftButton == MouseButtonState.Pressed)
-                        {      
-                        }
-            */
+            }
 
         }
         // Раскрываем colorCanvas для выбора цвета
@@ -213,7 +220,6 @@ namespace WpfApp1 {
         private void MouseLeftButtonUp1(object sender, MouseButtonEventArgs e) {
             if (EraserStroke.IsChecked == false & EraserButton.IsChecked == false) {
                 Desks[DeskNumber] = inkCanvas1.Strokes.Clone();
-                MessageBox.Show("Save!");
             }
         }
         // Меняем доску на следующую
@@ -225,6 +231,7 @@ namespace WpfApp1 {
                 CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
             }
             else {
+
                 Desks[DeskNumber - 1] = inkCanvas1.Strokes.Clone();
                 inkCanvas1.Strokes.Clear();
                 Desks.Add(inkCanvas1.Strokes.Clone());
@@ -278,6 +285,7 @@ namespace WpfApp1 {
             }
             DeskNumber = 0;
             inkCanvas1.Strokes = Desks[DeskNumber].Clone();
+            CurrentDesk.Text = $"{(DeskNumber + 1).ToString()} / {Desks.Count}";
         }
 
         private void ChoiceHand(object sender, RoutedEventArgs e) {
@@ -291,15 +299,15 @@ namespace WpfApp1 {
         private void onOffFXAA(object sender, RoutedEventArgs e) {
 
             if (FXAA.IsChecked == true)
-                inkCanvas1.DefaultDrawingAttributes.FitToCurve = true;            
-            else 
+                inkCanvas1.DefaultDrawingAttributes.FitToCurve = true;
+            else
                 inkCanvas1.DefaultDrawingAttributes.FitToCurve = false;
-            
+
         }
 
         private void onOffHighlither(object sender, RoutedEventArgs e) {
-            if (Highlither.IsChecked == true) 
-                inkCanvas1.DefaultDrawingAttributes.IsHighlighter = true;            
+            if (Highlither.IsChecked == true)
+                inkCanvas1.DefaultDrawingAttributes.IsHighlighter = true;
             else
                 inkCanvas1.DefaultDrawingAttributes.IsHighlighter = false;
         }

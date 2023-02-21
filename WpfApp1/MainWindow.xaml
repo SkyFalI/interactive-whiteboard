@@ -21,11 +21,11 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
-        <xctk:Zoombox Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3">
+        <xctk:Zoombox Name="zoomBox1" Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3">
             <InkCanvas      
                     MouseMove="MouseMove1"
                     MouseLeftButtonUp="MouseLeftButtonUp1"
-                    x:Name="inkCanvas1"
+                    x:Name="inkCanvas1" Height="784" Width="942"
                 />
         </xctk:Zoombox>
         <xctk:ColorCanvas x:Name="colorPicker1" Visibility="Hidden" VerticalAlignment="Bottom" MouseLeave="PickerHide" HorizontalAlignment="Center" Grid.Row="1" Grid.RowSpan="2" Grid.ColumnSpan="2"/>
