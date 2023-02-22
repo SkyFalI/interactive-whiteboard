@@ -149,6 +149,7 @@ namespace WpfApp1 {
             try {
                 inkCanvas1.DefaultDrawingAttributes.Width = (int)InkWidth.Value;
                 inkCanvas1.DefaultDrawingAttributes.Height = (int)InkWidth.Value;
+                inkCanvas1.EraserShape = new RectangleStylusShape((int)InkWidth.Value, (int)InkWidth.Value);
             } catch { InkWidth.Value = 1; }
 
         }
