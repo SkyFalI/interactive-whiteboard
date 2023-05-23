@@ -79,6 +79,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Choiser.cs" />
+    <Compile Include="Commands\Base\Command.cs" />
+    <Compile Include="Commands\CloseApplicationCommand.cs" />
+    <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="DeskStore.cs" />
+    <Compile Include="InkStore.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

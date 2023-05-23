@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" x:Class="WpfApp1.MainWindow"
+        xmlns:cmd="clr-namespace:WpfApp1.Commands"
         mc:Ignorable="d"
         Name ="MainForm" Title="MainWindow" MinHeight="800" MinWidth="1024" Height="800" Width="1024" WindowStartupLocation="CenterScreen" ResizeMode="CanResizeWithGrip" KeyUp="ReturnINK">
 
@@ -34,7 +35,12 @@
 
                 <Button Content="Очистить" Click="ClearCanvas"/>
                 <Button Content="Сохранить" Click="SaveCanvas"/>
-                <Button Content="Выход" Click="CloseApp" />
+                <Button Content="Выход">
+                    <Button.Command>
+                        <cmd:CloseApplicationCommand/>
+                    </Button.Command>
+                </Button>
+
                 <Separator />
 
                 <Button x:Name="Hand" Content="Рука" Click="ChoiceHand"/>
