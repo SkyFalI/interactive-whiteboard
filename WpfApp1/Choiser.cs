@@ -23,5 +23,32 @@ namespace WpfApp1 {
             inkCanvas1.EditingMode = InkCanvasEditingMode.GestureOnly;
             inkCanvas1.UseCustomCursor = false;
         }
+
+        internal static void ChoiceEraser(ref InkCanvas inkCanvas1, ref CheckBox EraserButton) {
+            if (EraserButton.IsChecked == true)
+                inkCanvas1.EditingMode = InkCanvasEditingMode.EraseByPoint;
+            else
+                inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
+        }
+
+        internal static void ChoiceEraserBytStroke(ref InkCanvas inkCanvas1, ref CheckBox EraserStroke) {
+            if (EraserStroke.IsChecked == true)
+                inkCanvas1.EditingMode = InkCanvasEditingMode.EraseByStroke;
+            else
+                inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
+        }
+
+        internal static void onOffFXAA(ref InkCanvas inkCanvas1, ref CheckBox Highlither) {
+            if (Highlither.IsChecked == true)
+                inkCanvas1.DefaultDrawingAttributes.FitToCurve = true;
+            else
+                inkCanvas1.DefaultDrawingAttributes.FitToCurve = false;
+        }
+        internal static void onOffHighlither(ref InkCanvas inkCanvas1, ref CheckBox FXAA) {
+            if (FXAA.IsChecked == true)
+                inkCanvas1.DefaultDrawingAttributes.IsHighlighter = true;
+            else
+                inkCanvas1.DefaultDrawingAttributes.IsHighlighter = false;
+        }
     }
 }

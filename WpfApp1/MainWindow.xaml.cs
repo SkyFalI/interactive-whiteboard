@@ -99,22 +99,10 @@ namespace WpfApp1 {
         }
         // Выбираем ластик
         private void ChoiceEraser(object sender, RoutedEventArgs e) {
-
-            /*
-            inkCanvas1.EditingMode = InkCanvasEditingMode.Ink;
-            inkCanvas1.DefaultDrawingAttributes.Color = Color.FromArgb(255, 255, 255, 255);
-            inkCanvas1.UseCustomCursor = true;
-            */
-            if (EraserButton.IsChecked == true)
-                _inkStore.inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
-            else
-                _inkStore.inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+            Choiser.ChoiceEraser(ref inkCanvas1, ref EraserButton);
         }
         private void ChoiceEraserBytStroke(object sender, RoutedEventArgs e) {
-            if (EraserStroke.IsChecked == true)
-                _inkStore.inkCanvas.EditingMode = InkCanvasEditingMode.EraseByStroke;
-            else
-                _inkStore.inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+            Choiser.ChoiceEraserBytStroke(ref inkCanvas1, ref EraserStroke);
         }
 
         // Выбираем кисть
@@ -146,7 +134,7 @@ namespace WpfApp1 {
         private void PickerHide(object sender, MouseEventArgs e) {
 
             colorPicker1.Visibility = Visibility.Hidden;
-
+            
             mcolor.A = colorPicker1.A;
             mcolor.R = colorPicker1.R;
             mcolor.G = colorPicker1.G;
@@ -191,19 +179,11 @@ namespace WpfApp1 {
         }
 
         private void onOffFXAA(object sender, RoutedEventArgs e) {
-
-            if (FXAA.IsChecked == true)
-                _inkStore.inkCanvas.DefaultDrawingAttributes.FitToCurve = true;
-            else
-                _inkStore.inkCanvas.DefaultDrawingAttributes.FitToCurve = false;
-
+            Choiser.onOffFXAA(ref inkCanvas1, ref FXAA);         
         }
 
         private void onOffHighlither(object sender, RoutedEventArgs e) {
-            if (Highlither.IsChecked == true)
-                _inkStore.inkCanvas.DefaultDrawingAttributes.IsHighlighter = true;
-            else
-                _inkStore.inkCanvas.DefaultDrawingAttributes.IsHighlighter = false;
+            Choiser.onOffHighlither(ref inkCanvas1, ref Highlither);
         }
 
     }
