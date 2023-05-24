@@ -28,6 +28,8 @@ namespace WpfApp1 {
 
             InitializeComponent();
 
+            mcolor = new ColorARGB();
+
             _inkStore = new InkStore(inkCanvas1);
             _deskStore = new DeskStore();
 
